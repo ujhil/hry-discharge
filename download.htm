@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎉 HRY 出院快乐！</title>
+  <style>
+    /* ==================== 全局重置 ==================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ==================== 字体引入 ==================== */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&family=Pacifico&display=swap');
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #333;
+    }
+
+    /* ==================== 背景粒子画布 ==================== */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ==================== 浮动气球 ==================== */
+    .balloon {
+      position: fixed;
+      bottom: -150px;
+      width: 60px;
+      height: 75px;
+      border-radius: 50%;
+      animation: floatUp linear forwards;
+      z-index: 1;
+    }
+    .balloon::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      width: 2px;
+      height: 30px;
+      background: rgba(255,255,255,0.4);
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-120vh) rotate(15deg); opacity: 0.3; }
+    }
+
+    /* ==================== 主容器 ==================== */
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* ==================== 顶部标题区 ==================== */
+    .header {
+      text-align: center;
+      padding: 60px 20px 40px;
+      animation: fadeInDown 1s ease;
+    }
+
+    .header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: 3px;
+      padding: 8px 24px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.5rem;
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      letter-spacing: 2px;
+    }
+
+    .header .subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.3rem;
+      margin-top: 12px;
+      font-weight: 300;
+    }
+
+    .header .name-highlight {
+      background: linear-gradient(90deg, #fff, #ffd700, #fff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 3s linear infinite;
+      font-size: 5rem;
+      font-weight: 900;
+      display: block;
+      margin-top: 16px;
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    /* ==================== 卡片通用样式 ==================== */
+    .card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      margin: 24px 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      animation: fadeInUp 0.8s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      font-size: 1.8rem;
+      color: #667eea;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card p {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: #555;
+      font-weight: 400;
+    }
+
+    /* ==================== 祝福消息卡片 ==================== */
+    .message-card {
+      text-align: center;
+    }
+
+    .message-card .quote-icon {
+      font-size: 3rem;
+      color: #f093fb;
+      opacity: 0.5;
+    }
+
+    .message-card .message-text {
+      font-size: 1.25rem;
+      line-height: 2;
+      color: #444;
+      margin: 20px 0;
+      font-weight: 400;
+    }
+
+    .message-card .signature {
+      color: #999;
+      font-size: 1rem;
+      margin-top: 16px;
+      font-style: italic;
+    }
+
+    /* ==================== 健康提示卡片 ==================== */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .tip-item {
+      background: linear-gradient(135deg, #f5f7ff, #fff);
+      border: 2px solid #e8ecff;
+      border-radius: 16px;
+      padding: 24px 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .tip-item:hover {
+      border-color: #667eea;
+      transform: scale(1.05);
+    }
+
+    .tip-item .tip-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .tip-item .tip-title {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .tip-item .tip-desc {
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    /* ==================== 时间线卡片 ==================== */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+      margin-top: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, #667eea, #f093fb);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+      animation: slideInLeft 0.6s ease;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid #667eea;
+      z-index: 1;
+    }
+
+    .timeline-item .timeline-date {
+      font-size: 0.85rem;
+      color: #999;
+      font-weight: 700;
+    }
+
+    .timeline-item .timeline-content {
+      font-size: 1.05rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* ==================== 互动按钮区 ==================== */
+    .action-area {
+      text-align: center;
+      padding: 20px 0 60px;
+    }
+
+    .celebrate-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 16px 48px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(102,126,234,0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .celebrate-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(102,126,234,0.6);
+    }
+
+    .celebrate-btn:active {
+      transform: translateY(0);
+    }
+
+    .celebrate-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .celebrate-btn:hover::before {
+      left: 100%;
+    }
+
+    /* ==================== 弹窗 ==================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      padding: 50px 40px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: bounceIn 0.5s ease;
+    }
+
+    .modal .modal-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+    }
+
+    .modal h3 {
+      font-size: 1.8rem;
+      color: #667eea;
+      margin-bottom: 12px;
+    }
+
+    .modal p {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .modal .close-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      border: none;
+      padding: 12px 36px;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .modal .close-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* ==================== 页脚 ==================== */
+    .footer {
+      text-align: center;
+      padding: 30px 20px 50px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+    }
+
+    .footer .heart {
+      color: #ff6b6b;
+      animation: beat 1s ease infinite;
+      display: inline-block;
+    }
+
+    /* ==================== 动画定义 ==================== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes bounceIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      60%  { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.3); }
+    }
+
+    /* ==================== 响应式 ==================== */
+    @media (max-width: 600px) {
+      .header h1 { font-size: 2.5rem; }
+      .header .name-highlight { font-size: 3.5rem; }
+      .card { padding: 24px; }
+      .card h2 { font-size: 1.4rem; }
+      .message-card .message-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 彩纸粒子画布 -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- 浮动气球容器 -->
+  <div id="balloonContainer"></div>
+
+  <!-- ==================== 主内容 ==================== -->
+  <div class="container">
+
+    <!-- 顶部标题 -->
+    <div class="header">
+      <span class="badge">★ DISCHARGE DAY ★</span>
+      <h1>恭喜出院！</h1>
+      <span class="name-highlight">HRY</span>
+      <p class="subtitle">终于告别了病房，欢迎回到阳光下的世界 🌈</p>
+    </div>
+
+    <!-- 祝福消息卡片 -->
+    <div class="card message-card">
+      <div class="quote-icon">"</div>
+      <div class="message-text">
+        亲爱的 HRY，<br>
+        经过这段时间的休养与治疗，你终于出院了！<br>
+        这段日子你经历了许多，但你坚强地走过来了。<br>
+        从今天起，好好吃饭，好好睡觉，好好生活。<br>
+        🍃 愿你从此健康平安，万事胜意！
+      </div>
+      <div class="signature">—— 来自你最关心的朋友 ❤️</div>
+    </div>
+
+    <!-- 健康提醒卡片 -->
+    <div class="card">
+      <h2>📋 出院后健康小贴士</h2>
+      <p>出院不代表结束，回家后也要照顾好自己哦！</p>
+      <div class="tips-grid">
+        <div class="tip-item">
+          <div class="tip-icon">💊</div>
+          <div class="tip-title">按时服药</div>
+          <div class="tip-desc">遵医嘱用药，不擅自停药或加量</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">🥗</div>
+          <div class="tip-title">饮食清淡</div>
+          <div class="tip-desc">营养均衡，少油少盐，多吃蔬果</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">😴</div>
+          <div class="tip-title">充足休息</div>
+          <div class="tip-desc">早睡早起，保证每天7-8小时睡眠</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">🚶</div>
+          <div class="tip-title">适度运动</div>
+          <div class="tip-desc">从散步开始，循序渐进，量力而行</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">📅</div>
+          <div class="tip-title">定期复查</div>
+          <div class="tip-desc">按时回医院复诊，关注恢复情况</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">😊</div>
+          <div class="tip-title">保持好心情</div>
+          <div class="tip-desc">心态是最好的良药，开心最重要！</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 康复时间线卡片 -->
+    <div class="card">
+      <h2>🛤️ HRY 的住院→出院旅程</h2>
+      <p>回望这段旅程，你已经走过了最艰难的路。</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">📅 入院日</div>
+          <div class="timeline-content">怀着不安住进了医院，开始接受治疗 🏥</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">⏳ 治疗期间</div>
+          <div class="timeline-content">积极配合治疗，默默忍受不适，坚强面对每一天 💪</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">📈 病情好转</div>
+          <div class="timeline-content">身体逐渐恢复，各项指标趋于正常，胜利在望 ✨</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">🎉 出院日 · 今天</div>
+          <div class="timeline-content">终于可以回家了！全新的健康生活从此开始！🎊</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 互动按钮 -->
+    <div class="action-area">
+      <button class="celebrate-btn" id="celebrateBtn">
+        🎊 点击为 HRY 庆祝 🎊
+      </button>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+      <p>Made with <span class="heart">❤</span> for HRY · 祝早日完全康复</p>
+    </div>
+
+  </div>
+
+  <!-- ==================== 庆祝弹窗 ==================== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-icon">🎉🎈🎊</div>
+      <h3>HRY，出院快乐！</h3>
+      <p>
+        今天是一个值得庆祝的日子！<br>
+        愿你未来的每一天都健康、快乐、充满阳光！<br>
+        我们一直在你身边 ❤️
+      </p>
+      <button class="close-btn" id="closeBtn">谢谢大家！</button>
+    </div>
+  </div>
+
+  <script>
+    // ==================== 彩纸粒子系统 ====================
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiPieces = [];
+    let isCelebrating = false;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const colors = ['#667eea', '#764ba2', '#f093fb', '#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#ffd700'];
+
+    class Confetti {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = -20;
+        this.w = Math.random() * 10 + 5;
+        this.h = Math.random() * 10 + 5;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.vx = (Math.random() - 0.5) * 6;
+        this.vy = Math.random() * 3 + 2;
+        this.rotation = Math.random() * 360;
+        this.vRotation = (Math.random() - 0.5) * 10;
+        this.opacity = 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.05;
+        this.rotation += this.vRotation;
+        if (this.y > canvas.height) this.opacity -= 0.02;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+        ctx.restore();
+      }
+    }
+
+    function launchConfetti(count) {
+      for (let i = 0; i < count; i++) {
+        confettiPieces.push(new Confetti());
+      }
+      isCelebrating = true;
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (isCelebrating || confettiPieces.length > 0) {
+        confettiPieces.forEach((p, i) => {
+          p.update();
+          p.draw();
+          if (p.opacity <= 0) confettiPieces.splice(i, 1);
+        });
+      }
+      requestAnimationFrame(animateConfetti);
+    }
+    animateConfetti();
+
+    // ==================== 浮动气球 ====================
+    const balloonContainer = document.getElementById('balloonContainer');
+    const balloonColors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#ff9ff3', '#54a0ff'];
+
+    function createBalloon() {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.background = `radial-gradient(circle at 30% 30%, ${balloonColors[Math.floor(Math.random() * balloonColors.length)]}, ${balloonColors[Math.floor(Math.random() * balloonColors.length)]})`;
+      balloon.style.animationDuration = (Math.random() * 8 + 8) + 's';
+      balloon.style.opacity = Math.random() * 0.4 + 0.3;
+      balloonContainer.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 16000);
+    }
+
+    // 初始气球
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createBalloon, i * 600);
+    }
+    // 持续生成气球
+    setInterval(createBalloon, 2000);
+
+    // ==================== 庆祝按钮互动 ====================
+    const celebrateBtn = document.getElementById('celebrateBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const closeBtn = document.getElementById('closeBtn');
+
+    celebrateBtn.addEventListener('click', () => {
+      launchConfetti(120);
+      setTimeout(() => launchConfetti(80), 400);
+      setTimeout(() => launchConfetti(60), 800);
+      setTimeout(() => {
+        modalOverlay.classList.add('active');
+      }, 600);
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+    });
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+      }
+    });
+
+    // ==================== 页面加载时小庆祝 ====================
+    window.addEventListener('load', () => {
+      setTimeout(() => launchConfetti(50), 500);
+    });
+
+    // ==================== 滚动渐入动画 ====================
+    const observerOptions = {
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.card').forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(40px)';
+      card.style.transition = `opacity 0.6s ease ${index * 0.15}s, transform 0.6s ease ${index * 0.15}s`;
+      observer.observe(card);
+    });
+  </script>
+
+</body>
+</html>
